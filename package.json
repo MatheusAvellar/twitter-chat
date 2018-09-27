@@ -1,0 +1,17 @@
+{
+  "name": "twitterbot",
+  "version": "0.0.1",
+  "description": "Project to develop a twitter bot",
+  "main": "twitterbot.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "",
+  "dependencies": {
+    "twit": "^2.2.9",
+    "express": "^4.15.2",
+    "socket.io": "^2.0.4"
+  }
+}

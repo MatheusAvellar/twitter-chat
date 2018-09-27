@@ -1,0 +1,232 @@
+html, body {
+    min-height: 100%;
+    height: 100%;
+    min-width: 100%;
+    width: 100%;
+    margin: 0;
+    box-sizing: border-box;
+    display: grid;
+    color: #1c2022;
+}
+#wrapper {
+    box-sizing: border-box;
+    margin: auto;
+    height: 100%;
+    width: 100%;
+    max-width: 1000px;
+    max-height: 800px;
+    display: grid;
+    grid-template-rows: 10% 80% 10%;
+    padding: 15px;
+    font-family: "Roboto", "Arial", sans-serif;
+}
+h1 {
+    margin: 0;
+    display: inline-block;
+}
+input {
+    padding: 0 15px;
+}
+output {
+    display: block;
+    font-size: 20px;
+    padding: 20px;
+    color: #697882;
+}
+header, main, footer {
+    padding: 15px;
+}
+main {
+    border-top: 1px solid #e1e8ed;
+    border-bottom: 1px solid #e1e8ed;
+    position: relative;
+}
+ul, li {
+    list-style: none;
+}
+#messages, #preview {
+    margin: 0;
+    padding: 0;
+}
+#messages {
+    height: 100%;
+    overflow-y: auto;
+}
+#preview {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    height: 0%;
+    overflow-y: hidden;
+    background: #fff;
+    box-shadow: 0px -3px 10px 0px #e1e8ed;
+    transition: all .2s ease;
+}
+#preview.opened {
+    height: 50%;
+    top: 50%;
+    overflow-y: auto;
+}
+footer > form {
+    position: relative;
+    display: grid;
+    height: 100%;
+    grid-template-columns: 80% 15%;
+    grid-column-gap: 5%;
+}
+#input {
+    outline: 0;
+    padding: 0 50px 0 15px;
+    border: 1px solid #c6c8ca;
+    color: #1e242c;
+    border-radius: 8px;
+}
+#input:focus {
+    border-color: #1da1f2;
+}
+#input.maxed {
+    border-color: #e0245e;
+}
+span#count {
+    position: absolute;
+    left: calc(80% - 34px);
+    top: calc(50% - 0.55em);
+    font-size: 12px;
+    color: #e0245e;
+}
+#find {
+    outline: 0;
+    border-radius: 100px;
+    box-shadow: none;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 20px;
+    padding: 6px;
+    position: relative;
+    text-align: center;
+    white-space: nowrap;
+    background-color: #fff;
+    border: 1px solid #1da1f2;
+    color: #1da1f2;
+}
+#find:active {
+    background-color: #006dbf;
+    border-color: #006dbf;
+    box-shadow: 0 0 0 2px #fff, 0 0 0 4px #1da1f2;
+    color: #fff;
+}
+#compact-mode {
+    outline: 0;
+    float: right;
+    background: transparent;
+    border: 0;
+    font-family: inherit;
+    cursor: pointer;
+}
+#compact-mode:hover {
+    text-decoration: underline;
+}
+blockquote.twitter-tweet {
+    position: relative;
+    padding: 20px 20px 11.6px;
+    margin: 10px;
+    background-color: #fff;
+    max-width: 100%;
+    overflow: hidden;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #e1e8ed;
+    border-radius: 2px;
+    transition: all .1s ease;
+}
+
+#preview > blockquote {
+    cursor: pointer;
+}
+
+blockquote.twitter-tweet:hover {
+    background-color: #f5f8fa;
+}
+blockquote.twitter-tweet > .tweet-body > a {
+    color: #1c2022;
+    text-decoration: none;
+}
+blockquote.twitter-tweet > .tweet-header > img {
+    float: left;
+    margin-right: 9px;
+    height: 36px;
+    border-radius: 50%;;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+blockquote.twitter-tweet > .tweet-header > span {
+    display: block;
+}
+blockquote.twitter-tweet > .tweet-header > span.name {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+blockquote.twitter-tweet > .tweet-header > span.username,
+blockquote.twitter-tweet > .tweet-body > a > time {
+    color: #697882;
+    font-size: 14px;
+}
+blockquote.twitter-tweet > .tweet-body > a:hover > time {
+    color: #2b7bb9;
+}
+blockquote.twitter-tweet > .tweet-header > span.username::before {
+    content: "@";
+}
+
+p.tweet {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+.mention,
+.hashtag,
+.url {
+    color: #1da1f2;
+    text-decoration: none;
+}
+p.tweet > a.mention:hover,
+p.tweet > a.hashtag:hover,
+p.tweet > a.url:hover {
+    text-decoration: underline;
+}
+#messages > li {
+    font-size: 14px;
+}
+#messages > li::before {
+    font-size: inherit;
+    content: attr(data-from) ": ";
+    color: #697882;
+    margin-right: 10px;
+}
+#messages > [data-from="system"] {
+    opacity: .5;
+}
+
+.compact blockquote.twitter-tweet {
+    padding: 10px 10px 10px;
+    margin: 5px;
+}
+.compact blockquote.twitter-tweet > .tweet-header > img {
+    display: none;
+}
+.compact blockquote.twitter-tweet > .tweet-header > span {
+    display: inline-block;
+}
+.compact p.tweet {
+    margin: 5px 0 5px 5px;
+}
+.compact blockquote.twitter-tweet > .tweet-body > a > time {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+}

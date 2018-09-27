@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title> Twitter Chat Thing </title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet"/>
+    <link href="/style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <div id="wrapper">
+        <header>
+            <h1> Twitter Chat Thing™ </h1>
+            <button id="compact-mode">Compact</button>
+        </header>
+        <main>
+            <ul id="messages"></ul>
+            <div id="preview"></div>
+        </main>
+        <footer>
+            <form id="form" action="">
+                <input id="input" autocomplete="off" type="text"/>
+                <span id="count"></span>
+                <button id="find">Find</button>
+            </form>
+        </footer>
+    </div>
+    <script src="/socket.io.js"></script>
+    <script type="text/javascript">
+const compact_mode = document.getElementById("compact-mode");
+compact_mode.onclick = function() {
+    document.body.className = document.body.className == "" ? "compact" : "";
+    messages.scrollTo(0, document.body.scrollHeight);
+}
+
+const messages = document.getElementById("messages");
+const preview = document.getElementById("preview");
+const input = document.getElementById("input");
+const count = document.getElementById("count");
+
+// Local IP of the machine running the script; yes I know it's stupid
+const IP = "";
+// Dinamically assigned user ID
+let UID = "";
+
+const socket = io("http://" + IP, {
+    transports: ["websocket", "xhr-polling", "polling", "htmlfile", "flashsocket"],
+    origins: "*",
+    reconnect: true
+});
+
+document.getElementById("form").onsubmit = function() {
+    const request = new XMLHttpRequest();
+    request.open("GET",
+        "./tweets?uid=" + encodeURIComponent(UID)
+              + "&q=" + encodeURIComponent(input.value),
+        true);
+
+    request.onreadystatechange = function() {
+        if(this.readyState !== 4) return;
+        if(this.status >= 200 && this.status < 400) {
+            preview.className = "opened";
+            preview.innerHTML = this.responseText;
+            preview.scrollTo(0, 0);
+        }
+    };
+    request.send();
+    return false;
+};
+
+socket.on("chat", messageReceived);
+function messageReceived(data) {
+    console.log(data);
+
+    const li = document.createElement("li");
+    li.dataset.from = data.from;
+    if(data.type === "text") {
+        li.innerText = data.msg;
+
+        // Super secure way of getting an ID
+        if(!UID && data.uid) UID = data.uid;
+    } else if(data.type === "tweet") {
+        const d = new Date(data.time);
+        const datestr = d.toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "long",
+            day: "numeric"
+        });
+
+        li.innerHTML = `<blockquote class='twitter-tweet'>
+            <div class='tweet-header'>
+                <img class='avatar' src='${data.avatar}'/>
+                <span class='name'>${data.name}</span>
+                <span class='username'>${data.username}</span>
+            </div>
+            <div class='tweet-body'>
+                <p class='tweet'>${data.text}</p>
+                <a target='_blank' href='${data.href}'>
+                    <time datetime='${d.toISOString()}'>
+                        ${(""+d.getHours()).padStart(2,0)}:${(""+d.getMinutes()).padStart(2,0)}
+                        - ${datestr}
+                    </time>
+                </a>
+            </div>
+        </blockquote>`;
+    }
+    messages.appendChild(li);
+    messages.scrollTo(0, messages.scrollHeight);
+};
+
+function send(e) {
+    const txt = e.children[1].children[0].innerHTML
+                .replace(/<span /g,"<a ")
+                .replace(/<\/span>/g,"</a>");
+
+    const obj = {
+        from: UID,
+        type: "tweet",
+        avatar: e.children[0].children[0].src,
+        name: e.children[0].children[1].innerText,
+        username: e.children[0].children[2].innerText,
+        text: txt,
+        href: e.children[1].children[1].href,
+        time: e.children[1].children[1].children[0].dateTime
+    };
+    socket.emit("chat", obj);
+    input.value = "";
+    preview.className = "";
+    setTimeout(() => { preview.innerHTML = "" }, 250);
+}
+
+input.oninput = function(e) {
+    if(input.value.length > 20) {
+        input.className = "maxed";
+        count.hidden = false;
+        count.innerText = 20 - input.value.length;
+    } else {
+        input.className = "";
+        count.hidden = true;
+    }
+}
+
+onkeydown = function(e) {
+    if(e.keyCode === 27
+    || e.which === 27
+    || e.code === "Escape"
+    || e.key === "Escape") {
+        input.value = "";
+        preview.className = "";
+        setTimeout(() => { preview.innerHTML = "" }, 250);
+    }
+}
+
+onbeforeunload = onblur = function(e) {
+    socket.emit("disc", {
+        uid: UID
+    });
+}
+    </script>
+</body>
+</html>
